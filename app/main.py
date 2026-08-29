@@ -1,7 +1,9 @@
 from fastapi import FastAPI
+from app.routes.user_routes import router
 
-app = FastAPI()
+app = FastAPI(
+    title="Device Systems API",
+    version="1.0"
+)
 
-@app.get("/")
-def read_root():
-    return {"message": "Bienvenido a device_systems API"}
+app.include_router(router)

@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Literal
+from typing import Optional
 
 
 class User(BaseModel):
@@ -23,3 +24,9 @@ class UserResponse(BaseModel):
     email: EmailStr
     role: str
     is_active: bool
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    role: Optional[Literal["admin", "support", "user"]] = None
+    is_active: Optional[bool] = None

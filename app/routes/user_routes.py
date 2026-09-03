@@ -1,5 +1,8 @@
+from operator import index
 from fastapi import APIRouter, HTTPException, Response
 from app.schemas.user_schema import User, UserCreate, UserResponse
+from app.schemas.user_schema import UserUpdate
+
 
 router = APIRouter()
 
@@ -97,3 +100,67 @@ def create_user(user: UserCreate):
     users.append(new_user)
 
     return new_user
+
+@router.put(
+    "/users/{user_id}",
+    response_model=UserResponse
+)
+def update_user(user_id: int, user_data: UserCreate):
+
+    for index, user in enumerate(users):
+        if user.id == user_id:
+            updated_user = User(
+                id=user_id,
+                **user_data.model_dump()
+            )
+            users[index] = updated_user 
+            return updated_user
+
+    raise HTTPException(
+        status_code=404,
+        detail="Usuario no encontrado"
+    )
+@router.patch(
+    "/users/{user_id}",
+    response_model=UserResponse
+)
+def patch_user(
+    user_id: int,
+    user_data: UserUpdate
+):
+    update_data = user_data.model_dump(
+        exclude_unset=True
+    )
+
+    if not update_data:
+        raise HTTPException(
+            status_code=400,
+            detail="No se enviaron campos para actualizar"
+        )
+    for index, user in enumerate(users):
+        if user.id == user_id:
+            updated_user = user.model_copy(
+                update=update_data
+            )
+            users[index] = updated_user
+            return updated_user
+
+    raise HTTPException(
+        status_code=404,
+        detail="Usuario no encontrado"
+    )
+
+@router.delete("/users/{user_id}")
+def delete_user(user_id: int):
+
+    for index, user in enumerate(users):
+        if user.id == user_id:
+            users.pop(index)
+            return {
+                "message":
+                "Usuario eliminado correctamente"
+            }
+    raise HTTPException(
+            status_code=404,
+            detail="Usuario no encontrado"
+    )

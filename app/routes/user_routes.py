@@ -2,6 +2,11 @@ from operator import index
 from fastapi import APIRouter, HTTPException, Response
 from app.schemas.user_schema import User, UserCreate, UserResponse
 from app.schemas.user_schema import UserUpdate
+from fastapi import Depends
+from app.dependencies.user_dependencies import (
+    get_user_or_404,
+    verify_token
+)
 
 
 router = APIRouter()
@@ -29,7 +34,10 @@ users = [
 # Lista todos los usuarios y permite filtrar
 @router.get(
     "/users",
-    response_model=list[UserResponse]
+    tags=["Users"],
+    summary="Listar usuarios",
+    description="Obtiene todos los usuarios registrados",
+    response_description="Lista de usuarios"
 )
 def get_users(
     response: Response,
@@ -79,7 +87,10 @@ def get_user(user_id: int):
 # Crear usuario nuevo
 @router.post(
     "/users",
-    response_model=UserResponse
+    tags=["Users"],
+    summary="Crear usuario",
+    description="Registra un nuevo usuario",
+    response_description="Usuario creado"
 )
 def create_user(user: UserCreate):
 
@@ -102,6 +113,8 @@ def create_user(user: UserCreate):
     return new_user
 
 @router.put(
+    # PUT
+    
     "/users/{user_id}",
     response_model=UserResponse
 )
@@ -121,6 +134,7 @@ def update_user(user_id: int, user_data: UserCreate):
         detail="Usuario no encontrado"
     )
 @router.patch(
+    # PATCH
     "/users/{user_id}",
     response_model=UserResponse
 )
@@ -151,6 +165,8 @@ def patch_user(
     )
 
 @router.delete("/users/{user_id}")
+# DELETE
+
 def delete_user(user_id: int):
 
     for index, user in enumerate(users):
@@ -164,3 +180,4 @@ def delete_user(user_id: int):
             status_code=404,
             detail="Usuario no encontrado"
     )
+    

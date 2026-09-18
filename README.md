@@ -23,3 +23,40 @@ SQLAlchemy
 SQLite
 Pydantic
 Uvicorn
+
+# Device Management System
+
+## Tecnologías
+
+- FastAPI
+- SQLAlchemy
+- Alembic
+- SQLite
+- Pydantic
+
+## Funcionalidades
+
+### Usuarios
+- Crear
+- Listar
+- Actualizar
+- Eliminar
+
+### Dispositivos
+- Crear
+- Listar
+- Actualizar
+- Eliminar
+
+### Préstamos
+- Crear préstamo
+- Devolver préstamo
+- Consultar historial
+
+### Consultas avanzadas
+- /loans/details
+- /users/{user_id}/loans
+- /devices/{device_id}/loans
+- filtros por estado
+- filtros por correo
+- filtros por tipo de dispositivo

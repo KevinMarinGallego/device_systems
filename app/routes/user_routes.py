@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.dependencies.database_dependency import get_db
 
+from app.schemas.loan_schema import get_loans_by_user
 from app.schemas.user_schema import (
     UserCreate,
     UserUpdate,
@@ -26,10 +27,25 @@ from app.services.user_service import (
     get_users_ordered_by_name,
     get_users_ordered_by_date
 )
+from app.services.loan_service import (
+    get_loans_by_user
+)
 
 router = APIRouter(
     tags=["Users"]
 )
+@router.get(
+    "/users/{user_id}/loans"
+)
+def user_loans(
+    user_id: int,
+    db: Session = Depends(get_db)
+):
+
+    return get_loans_by_user(
+        db,
+        user_id
+    )
 
 
 @router.get(

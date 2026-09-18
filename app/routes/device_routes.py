@@ -23,7 +23,9 @@ from app.services.device_service import (
     get_devices_by_brand,
     search_devices
 )
-
+from app.services.loan_service import (
+    get_loans_by_device
+)
 router = APIRouter(
     prefix="/devices",
     tags=["Devices"]
@@ -204,3 +206,15 @@ def remove_device(
     return {
         "detail": "Dispositivo eliminado correctamente"
     }
+@router.get(
+    "/{device_id}/loans"
+)
+def device_loans(
+    device_id: int,
+    db: Session = Depends(get_db)
+):
+
+    return get_loans_by_device(
+        db,
+        device_id
+    )

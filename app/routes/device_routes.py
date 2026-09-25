@@ -26,6 +26,9 @@ from app.services.device_service import (
 from app.services.loan_service import (
     get_loans_by_device
 )
+from app.dependencies.auth_dependency import (
+    require_admin
+)
 router = APIRouter(
     prefix="/devices",
     tags=["Devices"]
@@ -95,7 +98,8 @@ def get_device(
 )
 def create_new_device(
     device_data: DeviceCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(require_admin)
 ):
 
     existing_device = get_device_by_serial(
@@ -184,7 +188,8 @@ def patch_existing_device(
 @router.delete("/{device_id}")
 def remove_device(
     device_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(require_admin)
 ):
 
     device = get_device_by_id(
@@ -206,6 +211,7 @@ def remove_device(
     return {
         "detail": "Dispositivo eliminado correctamente"
     }
+    
 @router.get(
     "/{device_id}/loans"
 )

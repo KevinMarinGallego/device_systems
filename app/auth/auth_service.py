@@ -46,14 +46,14 @@ def register_user(
 
 def login_user(
     db: Session,
-    email: str,
+    username: str,
     password: str
 ):
 
     user = (
         db.query(User)
         .filter(
-            User.email == email
+            User.email == username
         )
         .first()
     )

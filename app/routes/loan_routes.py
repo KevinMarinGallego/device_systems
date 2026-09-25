@@ -26,6 +26,10 @@ from app.services.loan_service import (
     get_loans_by_user_email,
     get_loans_by_device_type
 )
+from app.dependencies.auth_dependency import (
+    get_current_active_user,
+    require_admin
+)
 
 router = APIRouter(
     prefix="/loans",
@@ -45,7 +49,11 @@ def list_loans(
 
     device_type: str = None,
 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+
+    current_user = Depends(
+        require_admin
+    )
 ):
 
     if status:
@@ -76,7 +84,10 @@ def list_loans(
 )
 
 def loan_details(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(
+        require_admin
+    )
 ):
 
     return get_loan_details(db)
@@ -88,7 +99,10 @@ def loan_details(
 )
 def get_loan(
     loan_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(
+        require_admin
+    )
 ):
 
     loan = get_loan_by_id(
@@ -124,7 +138,10 @@ def get_loan(
 
 def create_new_loan(
     loan_data: LoanCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(
+        get_current_active_user
+    )
 ):
 
     user = (
@@ -173,7 +190,10 @@ def create_new_loan(
 )
 def return_device(
     loan_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(
+        get_current_active_user
+    )
 ):
 
     loan = get_loan_by_id(

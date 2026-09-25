@@ -1,13 +1,13 @@
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 
 from sqlalchemy.orm import Session
 
 from app.schemas.auth_schema import (
     UserRegister,
     UserResponse,
-    UserLogin,
     Token
 )
 
@@ -46,6 +46,7 @@ def register(
     )
 
     if not user:
+
         raise HTTPException(
             status_code=400,
             detail="Email ya registrado"
@@ -59,17 +60,18 @@ def register(
     response_model=Token
 )
 def login(
-    user_data: UserLogin,
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
 
     token = login_user(
         db,
-        user_data.email,
-        user_data.password
+        form_data.username,
+        form_data.password
     )
 
     if not token:
+
         raise HTTPException(
             status_code=401,
             detail="Credenciales incorrectas"
@@ -78,14 +80,12 @@ def login(
     return token
 
 
-from fastapi import Header
-
 @router.get(
     "/me",
     response_model=UserResponse
 )
 def me(
-    current_user = Depends(
+    current_user=Depends(
         get_current_user
     )
 ):

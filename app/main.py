@@ -4,6 +4,9 @@ from app.database.connection import Base
 from app.database.connection import engine
 from app.routes.device_routes import router as device_router
 from app.routes.loan_routes import router as loan_router
+from app.auth.auth_routes import router as auth_router
+
+
 
 from app.models.user_model import User
 Base.metadata.create_all(bind=engine)
@@ -16,6 +19,9 @@ app = FastAPI(
         "name": "kevin marin",
         "email": "kevin@gmail.com"
     }
+)
+app.include_router(
+    auth_router
 )
 
 app.include_router(router)

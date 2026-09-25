@@ -30,6 +30,10 @@ class User(Base):
         nullable=False,
         index=True
     )
+    hashed_password = Column(
+    String,
+    nullable=False
+)
 
     role = Column(
         String,

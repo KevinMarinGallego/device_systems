@@ -2,6 +2,8 @@ from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import Request
+from app.core.limiter import limiter
 
 from sqlalchemy.orm import Session
 
@@ -35,7 +37,9 @@ router = APIRouter(
     response_model=UserResponse,
     status_code=201
 )
+@limiter.limit("3/minute")
 def register(
+    request: Request,
     user_data: UserRegister,
     db: Session = Depends(get_db)
 ):
@@ -59,7 +63,9 @@ def register(
     "/login",
     response_model=Token
 )
+@limiter.limit("5/minute")
 def login(
+    request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):

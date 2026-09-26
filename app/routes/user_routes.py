@@ -4,6 +4,7 @@ from fastapi import HTTPException
 
 from sqlalchemy.orm import Session
 
+from app.dependencies.auth_dependency import get_current_active_user
 from app.dependencies.database_dependency import get_db
 
 from app.schemas.loan_schema import get_loans_by_user
@@ -39,7 +40,10 @@ router = APIRouter(
 )
 def user_loans(
     user_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(
+        get_current_active_user
+    )
 ):
 
     return get_loans_by_user(
@@ -54,7 +58,10 @@ def user_loans(
     summary="Listar usuarios"
 )
 def list_users(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(
+        get_current_active_user
+    )
 ):
     return get_users(db)
 

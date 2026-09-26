@@ -495,3 +495,251 @@ El proyecto cuenta con:
 - Protección de endpoints críticos.
 - Integración completa con Swagger UI.
 - Validaciones robustas de usuarios y recursos.
+
+
+# 🔒 Seguridad Avanzada de la API
+
+En esta fase se fortaleció la seguridad de la aplicación mediante la implementación de CORS, Middleware personalizado y Rate Limiting.
+
+---
+
+# 🌐 Configuración CORS
+
+Se configuró `CORSMiddleware` para permitir que aplicaciones frontend autorizadas puedan consumir la API.
+
+## Configuración
+
+```python
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+```
+
+## Dominios Permitidos
+
+```text
+http://localhost:5173
+http://localhost:3000
+```
+
+## Propósito
+
+Permitir la comunicación segura entre la API y aplicaciones frontend desarrolladas en:
+
+- React
+- Vue
+- Angular
+- Vite
+
+## Consideraciones de Seguridad
+
+Durante el desarrollo se permiten orígenes específicos.
+
+No se recomienda utilizar:
+
+```python
+allow_origins=["*"]
+```
+
+en producción cuando se manejan credenciales, ya que cualquier dominio podría intentar acceder a los recursos protegidos de la API.
+
+---
+
+# ⚙️ Middleware Personalizado
+
+Se implementó un middleware global para mejorar la trazabilidad y monitoreo de las peticiones.
+
+## Funcionalidades
+
+- Medición del tiempo de procesamiento.
+- Identificación única de solicitudes.
+- Registro de actividad.
+- Inclusión de cabeceras personalizadas.
+
+## Cabeceras Generadas
+
+### Nombre de la aplicación
+
+```text
+X-App-Name: device_systems
+```
+
+### Tiempo de ejecución
+
+```text
+X-Process-Time: 0.0042
+```
+
+### Identificador de solicitud
+
+```text
+X-Request-ID: 8f42e9c1-bcc2-4af5
+```
+
+---
+
+## Información registrada
+
+Cada solicitud genera un registro con:
+
+```text
+Método HTTP
+Ruta solicitada
+Código de respuesta
+```
+
+Ejemplo:
+
+```text
+GET /auth/me 200
+POST /auth/login 401
+GET /loans 200
+```
+
+---
+
+# 🚦 Rate Limiting
+
+Se implementó control de tráfico utilizando la librería:
+
+```text
+SlowAPI
+```
+
+con el objetivo de prevenir abuso de la API y ataques de fuerza bruta.
+
+---
+
+## Límites Configurados
+
+### Registro de usuarios
+
+```http
+POST /auth/register
+```
+
+```text
+3 solicitudes por minuto
+```
+
+Implementación:
+
+```python
+@limiter.limit("3/minute")
+```
+
+---
+
+### Inicio de sesión
+
+```http
+POST /auth/login
+```
+
+```text
+5 solicitudes por minuto
+```
+
+Implementación:
+
+```python
+@limiter.limit("5/minute")
+```
+
+---
+
+## Respuesta al superar el límite
+
+Cuando un cliente supera el número permitido de solicitudes, la API responde:
+
+```http
+429 Too Many Requests
+```
+
+Ejemplo:
+
+```json
+{
+  "error": "Rate limit exceeded"
+}
+```
+
+---
+
+# ✅ Pruebas Realizadas
+
+## Middleware
+
+Se verificó la generación correcta de las cabeceras:
+
+```text
+X-App-Name
+X-Process-Time
+X-Request-ID
+```
+
+mediante las herramientas de desarrollo del navegador (Network > Response Headers).
+
+---
+
+## CORS
+
+Se validó la configuración de acceso desde los orígenes autorizados:
+
+```text
+http://localhost:5173
+http://localhost:3000
+```
+
+---
+
+## Rate Limiting
+
+Se ejecutaron múltiples solicitudes consecutivas a:
+
+```http
+POST /auth/login
+```
+
+hasta superar el límite configurado, obteniendo la respuesta:
+
+```http
+429 Too Many Requests
+```
+
+confirmando el correcto funcionamiento de SlowAPI.
+
+---
+
+# Resultado Final
+
+La aplicación `device_systems` cuenta con:
+
+✅ Autenticación JWT
+
+✅ OAuth2
+
+✅ Hash seguro de contraseñas
+
+✅ Validaciones avanzadas con Pydantic v2
+
+✅ Control de acceso por roles
+
+✅ Protección de rutas
+
+✅ Configuración CORS
+
+✅ Middleware personalizado
+
+✅ Rate Limiting
+
+✅ Swagger/OpenAPI documentado
+
+Lo anterior permite que la API sea más segura, escalable y preparada para integrarse con aplicaciones frontend modernas.
